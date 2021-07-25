@@ -27,7 +27,7 @@ package:
 functions:
   # sample hello world api
   helloWorld:
-    # path of the file where the function is returned
+    # path of the file where the function is written
     handler: src/api/handler.helloWorld
     events:
       - http:
