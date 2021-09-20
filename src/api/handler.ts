@@ -8,10 +8,9 @@ export class HelloWorld {
       try {
         const response = {
           statusCode: 200,
-          "Hello": "Welcome to Serverless"
+          body: JSON.stringify({"Hello": "Welcome to Serverless"})
         };
-        resolve(JSON.stringify(response))
-
+        resolve(response)
       } catch (error) {
         reject(error);
       }

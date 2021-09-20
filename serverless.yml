@@ -1,27 +1,24 @@
-service: sampleserverlesstemplate
-
-# You can pin your service to only deploy with a specific Serverless version
-# Check out our docs for more details
-frameworkVersion: '2'
+service: sampleserverlesstemplate #Replace it using your application name
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   lambdaHashingVersion: 20201221
-
-# you can overwrite defaults here
-stage: dev
-region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  memorySize: 512
+  timeout: 30
+  stackTags:
+    appname: ${self:service.name}
+    createdby: serverless #replace it by your email id
+    owner: appdev
+    approle: creating serverless framework
+    environment: ${self:provider.stage}
 
 # plugin to run it locally
 plugins:
   - serverless-offline
   - serverless-webpack
-
-# you can add packaging information here
-package:
- include:
-    - node_modules/serverless-offline/**
 
 # lambda functions
 functions:
@@ -34,20 +31,3 @@ functions:
          # http request path
          path: /hello
          method: GET
-
-  # lambda function to send request as response
-  printRequest:
-    handler: src/api/response.returnRequest
-    events:
-      - http:
-         path: /printRequest
-         method: POST
-      
-
-# you can add CloudFormation resource templates here
-#resources:
-Resources:
-  NewResource:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: ServerlessDeploymentBucket
