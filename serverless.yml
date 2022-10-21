@@ -1,4 +1,4 @@
-service: sampleserverlesstemplate #Replace it using your application name
+service: expert-ai-api-backend #Replace it using your application name
 
 provider:
   name: aws
