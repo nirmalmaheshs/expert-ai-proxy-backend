@@ -22,12 +22,19 @@ plugins:
 
 # lambda functions
 functions:
-  # sample hello world api
-  helloWorld:
-    # path of the file where the function is written
-    handler: src/api/handler.helloWorld
+
+  getToken:
+    handler: src/api/expertai.getToken
     events:
       - http:
          # http request path
-         path: /hello
-         method: GET
+         path: /token
+         method: POST
+
+  hateSpeech:
+    handler: src/api/expertai.hateSpeech
+    events:
+      - http:
+         # http request path
+         path: /hate-speech
+         method: POST

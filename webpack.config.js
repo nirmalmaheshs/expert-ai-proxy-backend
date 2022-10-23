@@ -1,8 +1,9 @@
-const slsw = require('serverless-webpack');
 const path = require('path');
+const slsw = require('serverless-webpack');
+
 module.exports = {
-    mode: 'development',
-    entry: slsw.lib.entries,
+  mode: 'development',
+  entry: slsw.lib.entries,
   // devtool: 'source-map',
   resolve: {
     modules: [
@@ -22,5 +23,14 @@ module.exports = {
     path: path.join(__dirname, '.webpack'),
     filename: '[name].js',
   },
-  target: 'node'
-}
+  target: 'node',
+  module: {
+    rules: [{
+      test: /\.ts(x?)$/,
+      loader: 'ts-loader'
+    }, ],
+  },
+  optimization: {
+    minimize: false
+  }
+};
