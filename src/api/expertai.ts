@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { EXPERT_AI_API, EXPERT_AI_AUTH } from '../constants/url.constants';
+import { OpenSearchUtils } from '../utils/open_search';
 
 export class ExpertAi {
-  
+
 
   static async getToken(event) {
     return new Promise(async(resolve, reject) => {
@@ -54,6 +55,11 @@ export class ExpertAi {
           });
         }
         console.log(hateSpeeches)
+        if(hateSpeeches.length > 0){
+          const openSearchUtils = new OpenSearchUtils();
+          let indexResponse = await openSearchUtils.insert_doc(hateSpeeches);
+          console.log(indexResponse)
+        }
         resolve(hateSpeeches)
       } catch (error) {
         reject(error);
