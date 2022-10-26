@@ -39,6 +39,22 @@ functions:
          path: /hate-speech
          method: POST
 
+  emotionalTraits:
+    handler: src/api/expertai.emotionalTraits
+    events:
+      - http:
+          # http request path
+          path: /emotional-traits
+          method: POST
+
+  behavioralTraits:
+    handler: src/api/expertai.behavioralTraits
+    events:
+      - http:
+          # http request path
+          path: /behavioral-traits
+          method: POST
+
 # resources:
 #   Resources:
 #     OpenSearchServiceDomain:
