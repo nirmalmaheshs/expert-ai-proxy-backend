@@ -36,7 +36,8 @@ export class ExpertAi {
   static async hateSpeech(event) {
     return new Promise(async (resolve) => {
       try {
-        let transcript = event.body;
+        const payload = JSON.parse(event.body);
+        let transcript = payload.text;
         const token = event.headers.Authorization;
         transcript = transcript.replace(/(\r\n|\n|\r)/gm, "");
         const params = {
@@ -67,10 +68,11 @@ export class ExpertAi {
             })
           });
         }
+        hateSpeeches = hateSpeeches.filter((speech) => speech.name !== 'target');
         console.log(hateSpeeches)
         if(hateSpeeches.length > 0){
           const openSearchUtils = new OpenSearchUtils();
-          let indexResponse = await openSearchUtils.insert_doc(hateSpeeches);
+          let indexResponse = await openSearchUtils.insert_doc(hateSpeeches, 'expert_ai_hate_speech');
           console.log(indexResponse)
         }
         resolve(ResponseUtils.generateResponse(
@@ -93,7 +95,8 @@ export class ExpertAi {
   static async emotionalTraits(event) {
     return new Promise(async (resolve) => {
       try {
-        let transcript = event.body.transcript;
+        const payload = JSON.parse(event.body);
+        let transcript = payload.text;
         const token = event.headers.Authorization;
         transcript = transcript.replace(/(\r\n|\n|\r)/gm, "");
         const params = {
@@ -108,26 +111,22 @@ export class ExpertAi {
           headers: headers
         });
         let emotionalTraits: Array<any> = []
-        const extractions = response.data?.data?.extractions
-        if(extractions.length > 0) {
-          extractions.forEach(extraction => {
-            extraction.fields.forEach(field => {
-              let position =field.positions[0];
-              // let speech = transcript.substring(position.start, position.end)
-              let string = transcript.substring(0, position.end)
-              let startIndex = string.lastIndexOf('<');
-              let endIndex = string.lastIndexOf('>');
-              field['speaker'] = string.substring(startIndex + 1, endIndex)
-              field['timestamp'] = new Date().toISOString()
-              field['meetingId'] = event.body.meetingId;
-              emotionalTraits.push(field)
-            })
+        const categories = response.data?.data.categories;
+        if(categories.length > 0) {
+          categories.forEach(category => {
+            let position =category.positions[0];
+            // let speech = transcript.substring(position.start, position.end)
+            let string = transcript.substring(position.start, position.end)
+            category['statement'] = string;
+            category['timestamp'] = new Date().toISOString()
+            category['meetingId'] = event.body.meetingId;
+            emotionalTraits.push(category)
           });
         }
         console.log(emotionalTraits)
         if(emotionalTraits.length > 0){
           const openSearchUtils = new OpenSearchUtils();
-          let indexResponse = await openSearchUtils.insert_doc(emotionalTraits);
+          let indexResponse = await openSearchUtils.insert_doc(emotionalTraits, 'expert_ai_emotional_traits');
           console.log(indexResponse)
         }
         resolve(ResponseUtils.generateResponse(
@@ -150,7 +149,8 @@ export class ExpertAi {
   static async behavioralTraits(event) {
     return new Promise(async (resolve) => {
       try {
-        let transcript = event.body.transcript;
+        const payload = JSON.parse(event.body);
+        let transcript = payload.text;
         const token = event.headers.Authorization;
         transcript = transcript.replace(/(\r\n|\n|\r)/gm, "");
         const params = {
@@ -165,26 +165,22 @@ export class ExpertAi {
           headers: headers
         });
         let behavioralTraits: Array<any> = []
-        const extractions = response.data?.data?.extractions
-        if(extractions.length > 0) {
-          extractions.forEach(extraction => {
-            extraction.fields.forEach(field => {
-              let position =field.positions[0];
-              // let speech = transcript.substring(position.start, position.end)
-              let string = transcript.substring(0, position.end)
-              let startIndex = string.lastIndexOf('<');
-              let endIndex = string.lastIndexOf('>');
-              field['speaker'] = string.substring(startIndex + 1, endIndex)
-              field['timestamp'] = new Date().toISOString()
-              field['meetingId'] = event.body.meetingId;
-              behavioralTraits.push(field)
-            })
+        const categories = response.data?.data?.categories
+        if(categories.length > 0) {
+          categories.forEach(category => {
+            let position =category.positions[0];
+            // let speech = transcript.substring(position.start, position.end)
+            let string = transcript.substring(position.start, position.end)
+            category['statement'] = string;
+            category['timestamp'] = new Date().toISOString()
+            category['meetingId'] = event.body.meetingId;
+            behavioralTraits.push(category)
           });
         }
         console.log(behavioralTraits)
         if(behavioralTraits.length > 0){
           const openSearchUtils = new OpenSearchUtils();
-          let indexResponse = await openSearchUtils.insert_doc(behavioralTraits);
+          let indexResponse = await openSearchUtils.insert_doc(behavioralTraits, 'expert_ai_behavioral_traits');
           console.log(indexResponse)
         }
         resolve(ResponseUtils.generateResponse(

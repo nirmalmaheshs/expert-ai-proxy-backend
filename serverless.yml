@@ -14,6 +14,10 @@ provider:
     owner: appdev
     approle: creating serverless framework
     environment: ${self:provider.stage}
+  environment:
+    HOST_NAME: search-expertai-jlyvjjfqyaq3tph5tv7f47v564.us-east-1.es.amazonaws.com
+    USERNAME: admin
+    PASSWORD: Qwerty@1
 
 # plugin to run it locally
 plugins:
@@ -54,35 +58,3 @@ functions:
           # http request path
           path: /behavioral-traits
           method: POST
-
-# resources:
-#   Resources:
-#     OpenSearchServiceDomain:
-#       Type: AWS::OpenSearchService::Domain
-#       Properties:
-#         DomainName: ${self:service.name}
-#         EngineVersion: 'OpenSearch_1.3'
-#         CognitoOptions:
-#           Enabled: true
-#           IdentityPoolId: String
-#           RoleArn: String
-#           UserPoolId: String
-#         ClusterConfig:
-#           DedicatedMasterEnabled: false
-#           InstanceCount: '1'
-#           ZoneAwarenessEnabled: true
-#           InstanceType: 't3.small.search'
-#         EBSOptions:
-#           EBSEnabled: true
-#           Iops: '3000'
-#           VolumeSize: '10'
-#           VolumeType: 'gp3'
-#         AccessPolicies:
-#           Version: '2012-10-17'
-#           Statement:
-#             -
-#               Effect: 'Allow'
-#               Principal:
-#                 AWS: 'arn:aws:iam::123456789012:user/opensearch-user'
-#               Action: 'es:*'
-#               Resource: 'arn:aws:es:us-east-1:846973539254:domain/test/*'

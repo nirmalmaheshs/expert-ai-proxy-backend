@@ -11,12 +11,12 @@ var client = new Client({
 
 export class OpenSearchUtils{
 
-    async insert_doc(documents){
+    async insert_doc(documents, indexName){
           let response = await client.helpers.bulk({
             datasource: documents,
-            onDocument (doc) {
+            onDocument () {
               return {
-                create: { _index: 'hate_speech'}
+                create: { _index: indexName}
               }
             }
           })
