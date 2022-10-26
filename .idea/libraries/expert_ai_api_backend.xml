@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="expert-ai-api-backend">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/.serverless/expert-ai-api-backend.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

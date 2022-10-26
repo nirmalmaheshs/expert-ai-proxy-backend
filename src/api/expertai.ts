@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { EXPERT_AI_API, EXPERT_AI_AUTH } from '../constants/url.constants';
 import { OpenSearchUtils } from '../utils/open_search';
+import ResponseUtils from "../utils/response.utils";
+import {HTTP_CONSTANTS} from "../utils/http.cosntants";
 
 export class ExpertAi {
 
@@ -14,9 +16,19 @@ export class ExpertAi {
           password: body.password
         }
         const token = await axios.post(EXPERT_AI_AUTH, params)
-        resolve(token.data)
+        resolve(ResponseUtils.generateResponse(
+            HTTP_CONSTANTS.STATUS.SUCCESS, JSON.stringify({
+              status: HTTP_CONSTANTS.STATUS.SUCCESS,
+              response: token.data
+            })
+        ));
       } catch (error) {
-        reject(error);
+        resolve(ResponseUtils.generateResponse(
+            HTTP_CONSTANTS.STATUS.SUCCESS, JSON.stringify({
+              status: HTTP_CONSTANTS.STATUS.SYSTEM_ERROR,
+              response: error.message
+            })
+        ));
       }
     })
   }
@@ -60,9 +72,19 @@ export class ExpertAi {
           let indexResponse = await openSearchUtils.insert_doc(hateSpeeches);
           console.log(indexResponse)
         }
-        resolve(hateSpeeches)
+        resolve(ResponseUtils.generateResponse(
+            HTTP_CONSTANTS.STATUS.SUCCESS, JSON.stringify({
+              status: HTTP_CONSTANTS.STATUS.SUCCESS,
+              response: hateSpeeches
+            })
+        ));
       } catch (error) {
-        reject(error);
+        resolve(ResponseUtils.generateResponse(
+            HTTP_CONSTANTS.STATUS.SUCCESS, JSON.stringify({
+              status: HTTP_CONSTANTS.STATUS.SYSTEM_ERROR,
+              response: error.message
+            })
+        ));
       }
     })
   }
