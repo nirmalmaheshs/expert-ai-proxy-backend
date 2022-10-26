@@ -7,6 +7,27 @@ import {HTTP_CONSTANTS} from "../utils/http.cosntants";
 export class ExpertAi {
 
 
+  static getSpeakers(text: string) {
+    const charArr = text.split('');
+    let startCharIndex = -1;
+    let endCharIndex = 0;
+    const speakers = []
+    charArr.forEach((char, index) => {
+      if (char === '<')
+        startCharIndex = index;
+      if (char === '>' && startCharIndex != -1) {
+        endCharIndex = index;
+        const speaker = text.slice(startCharIndex+1, endCharIndex);
+        speakers.push(speaker)
+        startCharIndex = -1;
+      }
+    })
+    function onlyUnique(value, index, self) {
+      return self.indexOf(value) === index;
+    }
+    return speakers.filter(onlyUnique);
+  }
+
   static async getToken(event) {
     return new Promise(async(resolve) => {
       try {
@@ -51,6 +72,7 @@ export class ExpertAi {
         let response = await axios.post(`${EXPERT_AI_API}/detect/hate-speech/en`, params, {
           headers: headers
         });
+        const speakers = ExpertAi.getSpeakers(transcript);
         let hateSpeeches: Array<any> = []
         const extractions = response.data?.data?.extractions
         if(extractions.length > 0) {
@@ -64,6 +86,7 @@ export class ExpertAi {
               field['speaker'] = string.substring(startIndex + 1, endIndex)
               field['timestamp'] = new Date().toISOString()
               field['meetingId'] = event.body.meetingId;
+              field['speakers'] = speakers;
               hateSpeeches.push(field)
             })
           });
@@ -110,6 +133,7 @@ export class ExpertAi {
         let response = await axios.post(`${EXPERT_AI_API}/categorize/emotional-traits/en`, params, {
           headers: headers
         });
+        const speakers = ExpertAi.getSpeakers(transcript);
         let emotionalTraits: Array<any> = []
         const categories = response.data?.data.categories;
         if(categories.length > 0) {
@@ -120,6 +144,7 @@ export class ExpertAi {
             category['statement'] = string;
             category['timestamp'] = new Date().toISOString()
             category['meetingId'] = event.body.meetingId;
+            category['speakers'] = speakers;
             emotionalTraits.push(category)
           });
         }
@@ -164,6 +189,7 @@ export class ExpertAi {
         let response = await axios.post(`${EXPERT_AI_API}/categorize/behavioral-traits/en`, params, {
           headers: headers
         });
+        const speakers = ExpertAi.getSpeakers(transcript);
         let behavioralTraits: Array<any> = []
         const categories = response.data?.data?.categories
         if(categories.length > 0) {
@@ -174,6 +200,7 @@ export class ExpertAi {
             category['statement'] = string;
             category['timestamp'] = new Date().toISOString()
             category['meetingId'] = event.body.meetingId;
+            category['speakers'] = speakers;
             behavioralTraits.push(category)
           });
         }
