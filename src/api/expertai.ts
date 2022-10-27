@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {EXPERT_AI_API, EXPERT_AI_AUTH} from '../constants/url.constants';
+import {EXPERT_AI_API, EXPERT_AI_AUTH, SLACK_WEBHOOK} from '../constants/url.constants';
 import {OpenSearchUtils} from '../utils/open_search';
 import ResponseUtils from "../utils/response.utils";
 import {HTTP_CONSTANTS} from "../utils/http.cosntants";
@@ -85,7 +85,7 @@ export class ExpertAi {
               let endIndex = string.lastIndexOf('>');
               field['speaker'] = string.substring(startIndex + 1, endIndex)
               field['timestamp'] = new Date().toISOString()
-              field['meetingId'] = event.body.meetingId;
+              field['meetingId'] = payload.meetingId;
               field['speakers'] = speakers;
               hateSpeeches.push(field)
             })
@@ -98,6 +98,10 @@ export class ExpertAi {
           let indexResponse = await openSearchUtils.insert_doc(hateSpeeches, 'expert_ai_hate_speech');
           console.log(indexResponse)
         }
+        let slackBody = {
+          text: `Hi HR team, \n <${hateSpeeches[0].speaker}> has made some violent comments \`${hateSpeeches[0].value}\`. See details on the <https://search-expertai-jlyvjjfqyaq3tph5tv7f47v564.us-east-1.es.amazonaws.com/_dashboards/goto/7b945eedc5ab066789b2b981448bab15?security_tenant=global|dashboard>.`
+        }
+        await axios.post(SLACK_WEBHOOK, slackBody)
         resolve(ResponseUtils.generateResponse(
             HTTP_CONSTANTS.STATUS.SUCCESS, JSON.stringify({
               status: HTTP_CONSTANTS.STATUS.SUCCESS,
@@ -143,7 +147,7 @@ export class ExpertAi {
             let string = transcript.substring(position.start, position.end)
             category['statement'] = string;
             category['timestamp'] = new Date().toISOString()
-            category['meetingId'] = event.body.meetingId;
+            category['meetingId'] = payload.meetingId;
             category['speakers'] = speakers;
             emotionalTraits.push(category)
           });
@@ -199,7 +203,7 @@ export class ExpertAi {
             let string = transcript.substring(position.start, position.end)
             category['statement'] = string;
             category['timestamp'] = new Date().toISOString()
-            category['meetingId'] = event.body.meetingId;
+            category['meetingId'] = payload.meetingId;
             category['speakers'] = speakers;
             behavioralTraits.push(category)
           });
