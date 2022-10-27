@@ -57,8 +57,8 @@ export class ExpertAi {
   static async hateSpeech(event) {
     return new Promise(async (resolve) => {
       try {
-        const payload = JSON.parse(event.body);
-        let transcript = payload.text;
+        let transcript =event.body;
+        // let transcript = payload.text;
         const token = event.headers.Authorization;
         transcript = transcript.replace(/(\r\n|\n|\r)/gm, "");
         const params = {
